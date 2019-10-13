@@ -107,15 +107,11 @@ class PasswordTest extends DuskTestCase
      */
     public function testUpdate()
     {
-        $user = $this->user;
         $password = factory(Password::class)->create();
         $newPassword = factory(Password::class)->make();
 
-        $this->browse(function (Browser $browser) use ($user, $password, $newPassword) {
-            $browser->loginAs($user)
-                    ->visit('/pass')
-                    ->assertVisible('.btn-edit')
-                    ->assertSee('Edit')
+        $this->browse(function (Browser $browser) use ($password, $newPassword) {
+            $browser->visit(new PasswordList)
                     ->click('.btn-edit:first-child')
                     ->assertPathIs('/pass/' . $password->id . '/edit')
                     ->assertSee('Edit password')
@@ -159,11 +155,10 @@ class PasswordTest extends DuskTestCase
      */
     public function testDelete()
     {
-        $user = $this->user;
         $password = factory(Password::class)->create();
 
-        $this->browse(function (Browser $browser) use ($user, $password) {
-            $browser->on(new PasswordList);
+        $this->browse(function (Browser $browser) use ($password) {
+            $browser->visit(new PasswordList);
 
             $frmAction = $browser->attribute('.frm-delete', 'action');
 

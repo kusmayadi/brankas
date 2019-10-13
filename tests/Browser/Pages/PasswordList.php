@@ -26,7 +26,10 @@ class PasswordList extends Page
     {
         $browser->assertPathIs($this->url())
                 ->assertPresent('.frm-delete')
-                ->assertVisible('.btn-delete');
+                ->assertVisible('.btn-delete')
+                ->assertSee('Delete')
+                ->assertVisible('.btn-edit')
+                ->assertSee('Delete');
     }
 
     /**
