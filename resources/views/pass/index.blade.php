@@ -15,7 +15,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Action</th>
+                    <th scope="col" colspan="2">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +26,13 @@
                         <td>{{ $no }}</td>
                         <td>{{ $password->name }}</td>
                         <td><a href="{{ route('pass.edit', $password->id)}}" class="btn btn-sm btn-info btn-edit">Edit</a></td>
+                        <td>
+                            <form action="{{ route('pass.destroy', $password->id) }}" method="POST" class="frm-delete">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

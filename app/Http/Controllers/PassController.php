@@ -87,6 +87,9 @@ class PassController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $password = Password::find($id);
+        $password->delete();
+
+        return redirect()->route('pass.index')->with('message', $password->name . ' has been removed.');
     }
 }

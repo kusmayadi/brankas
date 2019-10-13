@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 use Illuminate\Support\Facades\Crypt;
+use Tests\Browser\Pages\PasswordList;
 
 class PasswordTest extends DuskTestCase
 {
@@ -150,6 +151,35 @@ class PasswordTest extends DuskTestCase
             $this->assertEquals($savedPassword->login, $newPassword->login);
             $this->assertEquals(Crypt::decryptString($savedPassword->password), $newPassword->password);
             $this->assertEquals($savedPassword->notes, $newPassword->notes);
+        });
+    }
+
+    /**
+     * Test delete password
+     */
+    public function testDelete()
+    {
+        $user = $this->user;
+        $password = factory(Password::class)->create();
+
+        $this->browse(function (Browser $browser) use ($user, $password) {
+            $browser->on(new PasswordList);
+
+            $frmAction = $browser->attribute('.frm-delete', 'action');
+
+            $this->assertEquals($frmAction, route('pass.destroy', $password->id));
+
+            $browser->click('.btn-delete')
+                    ->assertPathIs('/pass')
+                    ->assertSee($password->name . ' has been removed.');
+
+            $this->assertDatabaseMissing('passwords', [
+                'name' => $password->name,
+                'url' => $password->url,
+                'login' => $password->login,
+                'password' => Crypt::encryptString($password->password),
+                'notes' => $password->notes
+            ]);
         });
     }
 }
