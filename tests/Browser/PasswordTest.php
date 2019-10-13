@@ -13,8 +13,15 @@ class PasswordTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
+    public function setUp() :void
+    {
+        parent::setUp();
+
+        $this->user = factory(User::class)->create();
+    }
+
     /**
-     * Test password creation
+     * Make sure PassController is protected by Auth
      *
      * @return void
      */
@@ -33,12 +40,13 @@ class PasswordTest extends DuskTestCase
      */
     public function testCreate()
     {
-        $user = factory(User::class)->create();
+        $user = $this->user;
         $password = factory(Password::class)->make();
 
         $this->browse(function (Browser $browser) use ($user, $password) {
-            $browser->loginAs($user)
+            $browser->loginAs($this->user)
                     ->visit('/pass/create')
+                    ->assertVisible('.container')
                     ->assertSee('Add new password')
                     ->type('name', $password->name)
                     ->type('url', $password->url)
@@ -64,5 +72,26 @@ class PasswordTest extends DuskTestCase
 
         /* Assert the stored password is the same as factory generated password */
         $this->assertEquals(Crypt::decryptString($storedPassword->password), $password->password);
+    }
+
+    /**
+     * Test password list
+     */
+    public function testList()
+    {
+        $user = $this->user;
+        $passwords = factory(Password::class, 5)->create();
+
+        $this->browse(function (Browser $browser) use ($user, $passwords) {
+            $browser->loginAs($this->user)
+                    ->visit('/pass')
+                    ->assertVisible('.container')
+                    ->assertSee('Passwords')
+                    ->assertVisible('#tb-list');
+
+            foreach ($passwords as $password) {
+                $browser->assertSee($password->name);
+            }
+        });
     }
 }

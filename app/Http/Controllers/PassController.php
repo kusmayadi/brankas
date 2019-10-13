@@ -14,7 +14,9 @@ class PassController extends Controller
      */
     public function index()
     {
-        return view('pass.index');
+        $passwords = Password::all();
+
+        return view('pass.index', ['passwords' => $passwords]);
     }
 
     /**
