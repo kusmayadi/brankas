@@ -15,6 +15,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,7 @@
                     <tr>
                         <td>{{ $no }}</td>
                         <td>{{ $password->name }}</td>
+                        <td><a href="{{ route('pass.edit', $password->id)}}" class="btn btn-sm btn-info btn-edit">Edit</a></td>
                     </tr>
                 @endforeach
             </tbody>

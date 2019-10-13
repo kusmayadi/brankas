@@ -48,7 +48,13 @@ class PasswordTest extends DuskTestCase
                     ->visit('/pass/create')
                     ->assertVisible('.container')
                     ->assertSee('Add new password')
-                    ->type('name', $password->name)
+                    ->assertPresent('#frm-password');
+
+            $frmAction = $browser->attribute('#frm-password', 'action');
+
+            $this->assertEquals($frmAction, route('pass.store'));
+
+            $browser->type('name', $password->name)
                     ->type('url', $password->url)
                     ->type('login', $password->login)
                     ->type('password', $password->password)
@@ -92,6 +98,58 @@ class PasswordTest extends DuskTestCase
             foreach ($passwords as $password) {
                 $browser->assertSee($password->name);
             }
+        });
+    }
+
+    /**
+     * Test update password
+     */
+    public function testUpdate()
+    {
+        $user = $this->user;
+        $password = factory(Password::class)->create();
+        $newPassword = factory(Password::class)->make();
+
+        $this->browse(function (Browser $browser) use ($user, $password, $newPassword) {
+            $browser->loginAs($user)
+                    ->visit('/pass')
+                    ->assertVisible('.btn-edit')
+                    ->assertSee('Edit')
+                    ->click('.btn-edit:first-child')
+                    ->assertPathIs('/pass/' . $password->id . '/edit')
+                    ->assertSee('Edit password')
+                    ->assertPresent('#frm-password');
+
+            $frmAction = $browser->attribute('#frm-password', 'action');
+            $fieldName = $browser->value('#frm-password input[name="name"]');
+            $fieldURL = $browser->value('#frm-password input[name="url"]');
+            $fieldLogin = $browser->value('#frm-password input[name="login"]');
+            $fieldPassword = $browser->value('#frm-password input[name="password"]');
+            $fieldNotes = $browser->value('#frm-password textarea[name="notes"]');
+
+            $this->assertEquals($frmAction, route('pass.update', $password->id));
+            $this->assertEquals($fieldName, $password->name);
+            $this->assertEquals($fieldURL, $password->url);
+            $this->assertEquals($fieldLogin, $password->login);
+            $this->assertEquals($fieldPassword, $password->password);
+            $this->assertEquals($fieldNotes, $password->notes);
+
+            $browser->type('name', $newPassword->name)
+                    ->type('url', $newPassword->url)
+                    ->type('login', $newPassword->login)
+                    ->type('password', $newPassword->password)
+                    ->type('notes', $newPassword->notes)
+                    ->press('Save')
+                    ->assertPathIs('/pass')
+                    ->assertSee($newPassword->name . ' has been saved.');
+
+            $savedPassword = Password::find($password->id);
+
+            $this->assertEquals($savedPassword->name, $newPassword->name);
+            $this->assertEquals($savedPassword->url, $newPassword->url);
+            $this->assertEquals($savedPassword->login, $newPassword->login);
+            $this->assertEquals(Crypt::decryptString($savedPassword->password), $newPassword->password);
+            $this->assertEquals($savedPassword->notes, $newPassword->notes);
         });
     }
 }

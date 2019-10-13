@@ -26,7 +26,7 @@ class PassController extends Controller
      */
     public function create()
     {
-        return view('pass.form');
+        return view('pass.form', ['action' => 'create']);
     }
 
     /**
@@ -61,7 +61,9 @@ class PassController extends Controller
      */
     public function edit($id)
     {
-        //
+        $password = Password::find($id);
+
+        return view('pass/form', ['password' => $password, 'action' => 'edit']);
     }
 
     /**
@@ -73,7 +75,8 @@ class PassController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        Password::findOrFail($id)->update($request->all());
+        return redirect()->route('pass.index')->with('message', $request->name . ' has been saved.');
     }
 
     /**
