@@ -25,11 +25,8 @@ class PasswordList extends Page
     public function assert(Browser $browser)
     {
         $browser->assertPathIs($this->url())
-                ->assertPresent('.frm-delete')
-                ->assertVisible('.btn-delete')
-                ->assertSee('Delete')
-                ->assertVisible('.btn-edit')
-                ->assertSee('Delete');
+                ->assertVisible('.container')
+                ->assertSee('Add new password');
     }
 
     /**
@@ -40,7 +37,7 @@ class PasswordList extends Page
     public function elements()
     {
         return [
-            '@element' => '#selector',
+            '@btnAddNew' => '#btn-add-new',
         ];
     }
 }

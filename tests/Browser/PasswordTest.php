@@ -45,9 +45,10 @@ class PasswordTest extends DuskTestCase
         $password = factory(Password::class)->make();
 
         $this->browse(function (Browser $browser) use ($user, $password) {
-            $browser->loginAs($this->user)
-                    ->visit('/pass/create')
-                    ->assertVisible('.container')
+            $browser->loginAs($user)
+                    ->visit(new PasswordList)
+                    ->click('@btnAddNew')
+                    ->assertPathIs('/pass/create')
                     ->assertSee('Add new password')
                     ->assertPresent('#frm-password');
 
@@ -76,7 +77,6 @@ class PasswordTest extends DuskTestCase
         ]);
 
         $storedPassword = Password::where('name', $password->name)->find(1);
-
         /* Assert the stored password is the same as factory generated password */
         $this->assertEquals(Crypt::decryptString($storedPassword->password), $password->password);
     }
@@ -112,6 +112,8 @@ class PasswordTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($password, $newPassword) {
             $browser->visit(new PasswordList)
+                    ->assertVisible('.btn-edit')
+                    ->assertSee('Edit')
                     ->click('.btn-edit:first-child')
                     ->assertPathIs('/pass/' . $password->id . '/edit')
                     ->assertSee('Edit password')
@@ -158,7 +160,10 @@ class PasswordTest extends DuskTestCase
         $password = factory(Password::class)->create();
 
         $this->browse(function (Browser $browser) use ($password) {
-            $browser->visit(new PasswordList);
+            $browser->visit(new PasswordList)
+                    ->assertPresent('.frm-delete')
+                    ->assertVisible('.btn-delete')
+                    ->assertSee('Delete');
 
             $frmAction = $browser->attribute('.frm-delete', 'action');
 

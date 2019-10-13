@@ -37,5 +37,7 @@
                 @endforeach
             </tbody>
         </table>
+
+        <a href="{{ route('pass.create') }}" class="btn btn-primary" id="btn-add-new">Add new password</a>
     </div>
 @endsection
