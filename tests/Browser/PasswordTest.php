@@ -92,8 +92,6 @@ class PasswordTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user, $passwords) {
             $browser->loginAs($this->user)
                     ->visit('/pass')
-                    ->assertVisible('.container')
-                    ->assertSee('Passwords')
                     ->assertVisible('#tb-list');
 
             foreach ($passwords as $password) {

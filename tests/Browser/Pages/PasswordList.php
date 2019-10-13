@@ -26,6 +26,7 @@ class PasswordList extends Page
     {
         $browser->assertPathIs($this->url())
                 ->assertVisible('.container')
+                ->assertSee('Passwords')
                 ->assertSee('Add new password');
     }
 
