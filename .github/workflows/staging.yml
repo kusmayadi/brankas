@@ -22,6 +22,10 @@ jobs:
       run: npm install
     - name: Run Laravel Mix
       run: npm run production
+    - name: Create database test
+      run: touch database/database.sqlite
+    - name: Run migration
+      run: php artisan migrate
     - name: Run unit & feature tests
       run: ./vendor/bin/phpunit
     - name: Upgrade chrome driver
