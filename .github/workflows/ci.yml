@@ -4,98 +4,8 @@ on: [push]
 
 jobs:
 
-  dusk-php-latest:
-    name: Dusk PHP Latest on Zaherg Docker Container
-    runs-on: ubuntu-latest
-    container: docker://zaherg/laravel-dusk:latest
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: Prepare environment vars
-      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
-    - name: Install Composer dependencies
-      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-    - name: Generate Laravel App Key
-      run: php artisan key:generate
-    - name: Create database test
-      run: touch database/database.sqlite
-    - name: Run migration
-      run: php artisan migrate
-    - name: Run unit & feature tests
-      run: ./vendor/bin/phpunit
-    - name: Upgrade chrome driver
-      run: php artisan dusk:chrome-driver
-    - name: Start Chrome Driver
-      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - name: Run Laravel Server
-      run: php artisan serve > /dev/null 2>&1 &
-    - name: Run dusk tests
-      run: php artisan dusk
-
-  dusk-php-73:
-    name: Dusk PHP 7.3 on Zaherg Docker Container
-    runs-on: ubuntu-latest
-    container: docker://zaherg/laravel-dusk:7.3
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: Prepare environment vars
-      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
-    - name: Install Composer dependencies
-      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-    - name: Generate Laravel App Key
-      run: php artisan key:generate
-    - name: Create database test
-      run: touch database/database.sqlite
-    - name: Run migration
-      run: php artisan migrate
-    - name: Run unit & feature tests
-      run: ./vendor/bin/phpunit
-    - name: Upgrade chrome driver
-      run: php artisan dusk:chrome-driver
-    - name: Start Chrome Driver
-      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - name: Run Laravel Server
-      run: php artisan serve > /dev/null 2>&1 &
-    - name: Run dusk tests
-      run: php artisan dusk
-
-  dusk-php-72:
-    name: Dusk PHP 7.2 on Zaherg Docker Container
-    runs-on: ubuntu-latest
-    container: docker://zaherg/laravel-dusk:7.2
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: Prepare environment vars
-      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
-    - name: Install Composer dependencies
-      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
-    - name: Generate Laravel App Key
-      run: php artisan key:generate
-    - name: Create database test
-      run: touch database/database.sqlite
-    - name: Run migration
-      run: php artisan migrate
-    - name: Run unit & feature tests
-      run: ./vendor/bin/phpunit
-    - name: Upgrade chrome driver
-      run: php artisan dusk:chrome-driver
-    - name: Start Chrome Driver
-      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - name: Run Laravel Server
-      run: php artisan serve > /dev/null 2>&1 &
-    - name: Run dusk tests
-      run: php artisan dusk
-
   dusk-host:
-    name: Dusk PHP latest on Host VM
+    name: Dusk PHP Test
     runs-on: ubuntu-latest
 
     steps:
@@ -118,6 +28,8 @@ jobs:
       run: php artisan migrate
     - name: Run unit & feature tests
       run: ./vendor/bin/phpunit
+    - name: Check Chrome Driver version
+      run: ./vendor/laravel/dusk/bin/chromedriver-linux --version
     - name: Upgrade chrome driver
       run: php artisan dusk:chrome-driver
     - name: Start Chrome Driver
