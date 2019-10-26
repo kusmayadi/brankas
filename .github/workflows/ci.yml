@@ -28,14 +28,8 @@ jobs:
       run: php artisan migrate
     - name: Run unit & feature tests
       run: ./vendor/bin/phpunit
-    - name: Update Chrome driver
-      run: php artisan dusk:update 74
-    - name: Check Chrome driver version
-      run: ./vendor/laravel/dusk/bin/chromedriver-linux --version
     - name: Upgrade chrome driver
       run: php artisan dusk:chrome-driver 74
-    - name: Start Chrome driver
-      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
     - name: Run Laravel server
       run: php artisan serve > /dev/null 2>&1 &
     - name: Run dusk tests
