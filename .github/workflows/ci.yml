@@ -1,20 +1,23 @@
 name: CI
 
-on:
-  push
+on: [push]
 
 jobs:
-  build-and-test:
-    name: Build & Test
+
+  dusk-php-latest:
+    name: Dusk PHP Latest on Zaherg Docker Container
     runs-on: ubuntu-latest
+    container: docker://zaherg/laravel-dusk:latest
 
     steps:
     - uses: actions/checkout@v1
-    - name: Copy ENV Laravel Configuration for CI
+      with:
+        fetch-depth: 1
+    - name: Prepare environment vars
       run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
-    - name: Install PHP dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
-    - name: Generate key
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - name: Generate Laravel App Key
       run: php artisan key:generate
     - name: Install npm dependencies
       run: npm install
@@ -27,7 +30,110 @@ jobs:
     - name: Run unit & feature tests
       run: ./vendor/bin/phpunit
     - name: Upgrade chrome driver
-      run: php artisan dusk:chrome-driver --all
+      run: php artisan dusk:chrome-driver
+    - name: Start Chrome Driver
+      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
+    - name: Run Laravel Server
+      run: php artisan serve > /dev/null 2>&1 &
+    - name: Run dusk tests
+      run: php artisan dusk
+
+  dusk-php-73:
+    name: Dusk PHP 7.3 on Zaherg Docker Container
+    runs-on: ubuntu-latest
+    container: docker://zaherg/laravel-dusk:7.3
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Prepare environment vars
+      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - name: Generate Laravel App Key
+      run: php artisan key:generate
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run Laravel Mix
+      run: npm run production
+    - name: Create database test
+      run: touch database/database.sqlite
+    - name: Run migration
+      run: php artisan migrate
+    - name: Run unit & feature tests
+      run: ./vendor/bin/phpunit
+    - name: Upgrade chrome driver
+      run: php artisan dusk:chrome-driver
+    - name: Start Chrome Driver
+      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
+    - name: Run Laravel Server
+      run: php artisan serve > /dev/null 2>&1 &
+    - name: Run dusk tests
+      run: php artisan dusk
+
+  dusk-php-72:
+    name: Dusk PHP 7.2 on Zaherg Docker Container
+    runs-on: ubuntu-latest
+    container: docker://zaherg/laravel-dusk:7.2
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Prepare environment vars
+      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - name: Generate Laravel App Key
+      run: php artisan key:generate
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run Laravel Mix
+      run: npm run production
+    - name: Create database test
+      run: touch database/database.sqlite
+    - name: Run migration
+      run: php artisan migrate
+    - name: Run unit & feature tests
+      run: ./vendor/bin/phpunit
+    - name: Upgrade chrome driver
+      run: php artisan dusk:chrome-driver
+    - name: Start Chrome Driver
+      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
+    - name: Run Laravel Server
+      run: php artisan serve > /dev/null 2>&1 &
+    - name: Run dusk tests
+      run: php artisan dusk
+
+  dusk-host:
+    name: Dusk PHP latest on Host VM
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Prepare environment vars
+      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - name: Generate Laravel App Key
+      run: php artisan key:generate
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run Laravel Mix
+      run: npm run production
+    - name: Create database test
+      run: touch database/database.sqlite
+    - name: Run migration
+      run: php artisan migrate
+    - name: Run unit & feature tests
+      run: ./vendor/bin/phpunit
+    - name: Upgrade chrome driver
+      run: php artisan dusk:chrome-driver
+    - name: Start Chrome Driver
+      run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
     - name: Run Laravel Server
       run: php artisan serve > /dev/null 2>&1 &
     - name: Run dusk tests
