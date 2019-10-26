@@ -29,7 +29,7 @@ jobs:
     - name: Run unit & feature tests
       run: ./vendor/bin/phpunit
     - name: Upgrade chrome driver
-      run: php artisan dusk:chrome-driver
+      run: php artisan dusk:chrome-driver 74
     - name: Start Chrome Driver
       run: ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
     - name: Run Laravel Server
