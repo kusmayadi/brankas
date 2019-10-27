@@ -33,6 +33,8 @@ class ServerTest extends DuskTestCase
                     ->visit('/server/create')
                     ->assertPathIs('/login')
                     ->visit('/server/edit')
+                    ->assertPathIs('/login')
+                    ->visit('/server/destroy')
                     ->assertPathIs('/login');
         });
     }
@@ -159,6 +161,40 @@ class ServerTest extends DuskTestCase
             $this->assertEquals(Crypt::decryptString($savedServer->console_password), $newServer->console_password);
             $this->assertEquals($savedServer->hostname, $newServer->hostname);
             $this->assertEquals($savedServer->notes, $newServer->notes);
+        });
+    }
+
+    /**
+     * Test delete server
+     */
+    public function testDelete()
+    {
+        $server = factory(Server::class)->create(['user_id' => $this->user->id]);
+
+        $this->browse(function (Browser $browser) use ($server) {
+            $browser->visit(new ServerList)
+                    ->assertPresent('.frm-delete')
+                    ->assertVisible('.btn-delete')
+                    ->assertSee('Delete');
+
+            $frmAction = $browser->attribute('.frm-delete', 'action');
+
+            $this->assertEquals($frmAction, route('server.destroy', $server->id));
+
+            $browser->click('.btn-delete')
+                    ->assertPathIs('/server')
+                    ->assertSee($server->name . ' has been removed.');
+
+            $this->assertDatabaseMissing('servers', [
+                'name' => $server->name,
+                'url' => $server->url,
+                'username' => $server->username,
+                'password' => Crypt::encryptString($server->password),
+                'console_url' => $server->console_url,
+                'console_username' => $server->console_username,
+                'console_password' => Crypt::encryptString($server->console_password),
+                'notes' => $server->notes
+            ]);
         });
     }
 }

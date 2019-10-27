@@ -89,6 +89,9 @@ class ServerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $server = Server::find($id);
+        $server->delete();
+
+        return redirect()->route('server.index')->with('message', $server->name . ' has been removed.');
     }
 }
