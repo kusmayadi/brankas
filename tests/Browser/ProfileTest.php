@@ -52,4 +52,41 @@ class ProfileTest extends DuskTestCase
             $this->assertEquals($fieldEmail, $this->user->email);
         });
     }
+
+    /**
+     * Test save profile
+     * @return void
+     */
+    public function testSave()
+    {
+        $newUser = factory(User::class)->make();
+
+        $this->browse(function (Browser $browser) use ($newUser) {
+            $browser->loginAs($this->user)
+                    ->visit('/home')
+                    ->click('#user-nav')
+                    ->click('@profile')
+                    ->assertPathIs('/profile')
+                    ->assertSee('Your Profile')
+                    ->assertPresent('#frm-profile')
+                    ->type('name', $newUser->name)
+                    ->type('email', $newUser->email)
+                    ->press('Save')
+                    ->assertPathIs('/profile')
+                    ->assertSee('Your profile has been saved.');
+
+            $user = User::find($this->user->id);
+
+            // Make sure it's updated in database
+            $this->assertEquals($user->name, $newUser->name);
+            $this->assertEquals($user->email, $newUser->email);
+
+            // Make sure profile form filled by the updated data
+            $fieldName = $browser->value('#frm-profile input[name="name"]');
+            $fieldEmail = $browser->value('#frm-profile input[name="email"]');
+
+            $this->assertEquals($fieldName, $newUser->name);
+            $this->assertEquals($fieldEmail, $newUser->email);
+        });
+    }
 }

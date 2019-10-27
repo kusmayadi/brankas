@@ -3,6 +3,13 @@
 @section('content')
 <div class="container">
     <h1>Your Profile</h1>
+
+    @if (session('message'))
+        <div class="alert alert-success">
+            {{ session('message') }}
+        </div>
+    @endif
+
     <form action="{{ route('profile.save') }}" method="post" id="frm-profile">
         @csrf
 
