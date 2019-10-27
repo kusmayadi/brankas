@@ -18,7 +18,7 @@ $factory->define(Server::class, function (Faker $faker) {
         'hostname' => $faker->ipv4,
         'notes' => $faker->text,
         'user_id' => function () {
-            return User::inRandomOrder()->first()->id();
+            return User::inRandomOrder()->first()->id;
         }
     ];
 });

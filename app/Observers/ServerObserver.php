@@ -15,7 +15,9 @@ class ServerObserver
      */
     public function creating(Server $server)
     {
-        $server->user_id = Auth::user()->id;
+        if (Auth::user()) {
+            $server->user_id = Auth::user()->id;
+        }
     }
 
     /**

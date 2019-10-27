@@ -63,7 +63,9 @@ class ServerController extends Controller
      */
     public function edit($id)
     {
-        //
+        $server = Server::find($id);
+
+        return view('server.form', ['server' => $server, 'action' => 'edit']);
     }
 
     /**
@@ -75,7 +77,8 @@ class ServerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        Server::findOrFail($id)->update($request->all());
+        return redirect()->route('server.index')->with('message', $request->name . ' has been saved.');
     }
 
     /**
