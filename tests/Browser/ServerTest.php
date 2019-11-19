@@ -110,7 +110,7 @@ class ServerTest extends DuskTestCase
                     ->visit(new ServerList)
                     ->assertVisible('.btn-edit')
                     ->assertSee('Edit')
-                    ->click('.btn-edit:first-child')
+                    ->click('.btn-edit')
                     ->assertPathIs('/server/' . $server->id . '/edit')
                     ->assertSee('Edit server')
                     ->assertPresent('#frm-server');

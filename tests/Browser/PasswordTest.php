@@ -112,7 +112,7 @@ class PasswordTest extends DuskTestCase
             $browser->visit(new PasswordList)
                     ->assertVisible('.btn-edit')
                     ->assertSee('Edit')
-                    ->click('.btn-edit:first-child')
+                    ->click('.btn-edit')
                     ->assertPathIs('/pass/' . $password->id . '/edit')
                     ->assertSee('Edit password')
                     ->assertPresent('#frm-password');
