@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Servers</h1>
+        <h2>Servers</h2>
 
         @if (session('message'))
             <div class="alert alert-success">
@@ -10,26 +10,26 @@
             </div>
         @endif
 
-        <table class="table table-table-bordered" id="tb-list">
-            <thead>
+        <table class="table table-bordered" id="tb-list">
+            <thead class="thead-light">
                 <tr>
-                    <th scope="col">#</th>
+                    <th scope="col" width="2">No</th>
                     <th scope="col">Name</th>
-                    <th scope="col" colspan="2">Action</th>
+                    <th scope="col" class="w-25">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @php ($no = 0)
                 @foreach ($servers as $server)
                     @php ($no++)
-                    <tr>
+                    <tr class="table-secondary">
                         <td>{{ $no }}</td>
                         <td>{{ $server->name }}</td>
-                        <td><a href="{{ route('server.edit', $server->id)}}" class="btn btn-sm btn-info btn-edit">Edit</a></td>
                         <td>
                             <form action="{{ route('server.destroy', $server->id) }}" method="POST" class="frm-delete">
                                 @csrf
                                 @method('DELETE')
+                                <a href="{{ route('server.edit', $server->id)}}" class="btn btn-sm btn-info btn-edit">Edit</a>
                                 <button type="submit" class="btn btn-sm btn-danger btn-delete">Delete</button>
                             </form>
                         </td>
