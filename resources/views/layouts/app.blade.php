@@ -33,7 +33,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item @if (isset($activeNav) AND $activeNav == 'passwords') {{ 'active' }} @endif">
+                            <a class="nav-link" href="{{ route('pass.index') }}">Passwords @if (isset($activeNav) AND $activeNav == 'passwords') {!! '<span class="sr-only">(current)</span>' !!} @endif</a>
+                        </li>
+                        <li class="nav-item @if (isset($activeNav) AND $activeNav == 'servers') {{ 'active' }} @endif">
+                            <a class="nav-link" href="{{ route('server.index') }}">Servers @if (isset($activeNav) AND $activeNav == 'servers') {!! '<span class="sr-only">(current)</span>' !!} @endif</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
