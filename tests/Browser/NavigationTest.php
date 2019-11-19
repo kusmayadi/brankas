@@ -22,6 +22,21 @@ class NavigationTest extends DuskTestCase
         factory(Server::class, 5)->create();
     }
 
+
+    /**
+     * Test Not authenticated navigation.
+     *
+     * @return void
+     */
+    public function testNotAuthenticatedNavigation()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser ->visit('/')
+                    ->assertDontSee('Passwords')
+                    ->assertDontSee('Servers');
+        });
+    }
+
     /**
      * Test Navigation.
      *
