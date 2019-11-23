@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Password;
+use Auth;
 
 class PassController extends Controller
 {
@@ -14,7 +15,7 @@ class PassController extends Controller
      */
     public function index()
     {
-        $passwords = Password::all();
+        $passwords = Password::where('user_id', Auth::user()->id)->get();
 
         return view('pass.index', ['passwords' => $passwords]);
     }
@@ -75,8 +76,14 @@ class PassController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Password::findOrFail($id)->update($request->all());
-        return redirect()->route('pass.index')->with('message', $request->name . ' has been saved.');
+        $password = Password::findOrFail($id);
+
+        if (Auth::id() == $password->user_id) {
+            $password->update($request->all());
+            return redirect()->route('pass.index')->with('message', $request->name . ' has been saved.');
+        } else {
+            abort(403);
+        }
     }
 
     /**
@@ -88,8 +95,12 @@ class PassController extends Controller
     public function destroy($id)
     {
         $password = Password::find($id);
-        $password->delete();
 
-        return redirect()->route('pass.index')->with('message', $password->name . ' has been removed.');
+        if (Auth::id() == $password->user_id) {
+            $password->delete();
+            return redirect()->route('pass.index')->with('message', $password->name . ' has been removed.');
+        } else {
+            abort(403);
+        }
     }
 }

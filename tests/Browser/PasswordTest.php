@@ -59,7 +59,7 @@ class PasswordTest extends DuskTestCase
             $browser->type('name', $password->name)
                     ->type('url', $password->url)
                     ->type('login', $password->login)
-                    ->type('password', $password->password)
+                    ->type('password', 'secret')
                     ->type('notes', $password->notes)
                     ->press('Save')
                     ->assertPathIs('/pass')
@@ -78,7 +78,7 @@ class PasswordTest extends DuskTestCase
 
         $storedPassword = Password::where('name', $password->name)->find(1);
         /* Assert the stored password is the same as factory generated password */
-        $this->assertEquals(Crypt::decryptString($storedPassword->password), $password->password);
+        $this->assertEquals(Crypt::decryptString($storedPassword->password), 'secret');
     }
 
     /**
@@ -87,7 +87,7 @@ class PasswordTest extends DuskTestCase
     public function testList()
     {
         $user = $this->user;
-        $passwords = factory(Password::class, 5)->create();
+        $passwords = factory(Password::class, 5)->create(['user_id' => $user->id]);
 
         $this->browse(function (Browser $browser) use ($user, $passwords) {
             $browser->loginAs($this->user)
@@ -105,14 +105,15 @@ class PasswordTest extends DuskTestCase
      */
     public function testUpdate()
     {
-        $password = factory(Password::class)->create();
+        $password = factory(Password::class)->create(['user_id' => $this->user->id]);
+
         $newPassword = factory(Password::class)->make();
 
         $this->browse(function (Browser $browser) use ($password, $newPassword) {
             $browser->visit(new PasswordList)
                     ->assertVisible('.btn-edit')
                     ->assertSee('Edit')
-                    ->click('.btn-edit')
+                    ->clickLink('Edit')
                     ->assertPathIs('/pass/' . $password->id . '/edit')
                     ->assertSee('Edit password')
                     ->assertPresent('#frm-password');
@@ -134,7 +135,7 @@ class PasswordTest extends DuskTestCase
             $browser->type('name', $newPassword->name)
                     ->type('url', $newPassword->url)
                     ->type('login', $newPassword->login)
-                    ->type('password', $newPassword->password)
+                    ->type('password', 'secret')
                     ->type('notes', $newPassword->notes)
                     ->press('Save')
                     ->assertPathIs('/pass')
@@ -145,7 +146,7 @@ class PasswordTest extends DuskTestCase
             $this->assertEquals($savedPassword->name, $newPassword->name);
             $this->assertEquals($savedPassword->url, $newPassword->url);
             $this->assertEquals($savedPassword->login, $newPassword->login);
-            $this->assertEquals(Crypt::decryptString($savedPassword->password), $newPassword->password);
+            $this->assertEquals(Crypt::decryptString($savedPassword->password), 'secret');
             $this->assertEquals($savedPassword->notes, $newPassword->notes);
         });
     }
@@ -155,7 +156,7 @@ class PasswordTest extends DuskTestCase
      */
     public function testDelete()
     {
-        $password = factory(Password::class)->create();
+        $password = factory(Password::class)->create(['user_id' => $this->user->id]);
 
         $this->browse(function (Browser $browser) use ($password) {
             $browser->visit(new PasswordList)
@@ -178,6 +179,26 @@ class PasswordTest extends DuskTestCase
                 'password' => Crypt::encryptString($password->password),
                 'notes' => $password->notes
             ]);
+        });
+    }
+
+    /**
+     * Test ownership
+     */
+    public function testOwner()
+    {
+        $user = $this->user;
+        $otherUser = factory(User::class)->create();
+
+        $password = factory(Password::class)->create(['user_id' => $user->id]);
+
+        $this->browse(function ($firstUser, $secondUser) use ($password, $otherUser) {
+            $firstUser->visit(new PasswordList)
+                      ->assertSee($password->name);
+
+            $secondUser->loginAs($otherUser)
+                       ->visit('/pass')
+                       ->assertDontSee($password->name);
         });
     }
 }

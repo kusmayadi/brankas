@@ -13,4 +13,9 @@ class Password extends Model
     {
         $this->attributes['password'] = Crypt::encryptString($value);
     }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
 }

@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Observers\ServerObserver;
+use App\Observers\PasswordObserver;
 use App\Server;
+use App\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Password::observe(PasswordObserver::class);
         Server::observe(ServerObserver::class);
     }
 }

@@ -18,7 +18,7 @@ class NavigationTest extends DuskTestCase
         parent::setUp();
 
         $this->user = factory(User::class)->create();
-        factory(Password::class, 5)->create();
+        factory(Password::class, 5)->create(['user_id' => $this->user->id]);
         factory(Server::class, 5)->create();
     }
 
